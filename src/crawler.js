@@ -1,7 +1,6 @@
 const puppeteer = require('puppeteer');
 
-const regexGlobalInfo = /(.*) \[(.*) pts\]\((.*)\)Dernier état connu :[ ]*(.*)Date et source : (.*) (\(.*\))?/;
-const regexGlobalInfoPrime = /(.*) \[(.*) pts\]\((.*)\)Dernier état connu :[ ]*(.*)/;
+const regexGlobalInfo = /<font class="normal"><b>(.*) \[(.*) pts\]<\/b><br>\((.*)\)<br>Dernier état connu : .* width="25"> ([a-zA-ZÀ-ÿ !]*)<br>*(Date et source : (.*[ ]\d{4}) (\(.*\))?.*)?/;
 const regexComments = /(.*) \(([0-9]{2}\/[0-9]{2}\/[0-9]{4})\) :(.*)/;
 
 const getImages = async (page, index, name, imgIndex, json) => {
@@ -9,16 +8,8 @@ const getImages = async (page, index, name, imgIndex, json) => {
     (index, imgIndex) => {
       // eslint-disable-next-line no-undef
       let obj = document.querySelector(
-        `tr.haut:nth-child(${index * 3 + 1}) > td:nth-child(${imgIndex}) a`
+        `tr.haut:nth-child(${index * 3 + 1}) > td:nth-child(${imgIndex}) img`
       );
-      if (!obj) {
-        // eslint-disable-next-line no-undef
-        obj = document.querySelector(
-          `tr.haut:nth-child(${index * 3 + 1}) > td:nth-child(${imgIndex}) img`
-        );
-      } else {
-        return obj.getAttribute('href');
-      }
       if (!obj) {
         return null;
       }
@@ -49,7 +40,7 @@ const getInfoMetadata = async (page, index, json) => {
     // eslint-disable-next-line no-undef
     return document.querySelector(
       `tr.haut:nth-child(${index * 3 + 1}) > td > font`
-    ).textContent;
+    ).outerHTML;
   }, index);
   const resGlobalInfo = globalInfo.match(regexGlobalInfo);
 
@@ -59,24 +50,11 @@ const getInfoMetadata = async (page, index, json) => {
     const city = resGlobalInfo[3];
     const status = resGlobalInfo[4].trim();
 
-    const date = resGlobalInfo[5];
+    const date = resGlobalInfo[6];
 
     json.metadata = { name, points, city, status, date };
   } else {
-    // try other one
-    const resGlobalInfoPrime = globalInfo.match(regexGlobalInfoPrime);
-
-    if (resGlobalInfoPrime) {
-      const name = resGlobalInfoPrime[1];
-      const points = resGlobalInfoPrime[2];
-      const city = resGlobalInfoPrime[3];
-      const status = resGlobalInfoPrime[4];
-      const date = null;
-
-      json.metadata = { name, points, city, status, date };
-    } else {
-      console.error(`no regex found for: ${globalInfo}`);
-    }
+    console.error(`no regex found for: ${globalInfo}`);
   }
 };
 

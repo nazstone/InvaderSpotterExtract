@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { getDb, run, close, insertItem } = require('./sqlite');
 const { read, listFile } = require('./file');
 const { fetchDataFromWebSite } = require('./crawler');
@@ -6,6 +7,11 @@ const start = async () => {
   try {
     console.log('starting');
     // init db
+    try {
+      fs.unlinkSync('./invaders.sqlite3');
+    } catch (error) {
+      console.error(error);
+    }
     await getDb('./invaders.sqlite3');
 
     console.log('running sql');
