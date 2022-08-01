@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-('AVI_41 [100 pts](Avignon)Dernier état connu :  Détruit !');
+
 const regexGlobalInfo = /(.*) \[(.*) pts\]\((.*)\)Dernier état connu :[ ]*(.*)Date et source : (.*) (\(.*\))?/;
 const regexGlobalInfoPrime = /(.*) \[(.*) pts\]\((.*)\)Dernier état connu :[ ]*(.*)/;
 const regexComments = /(.*) \(([0-9]{2}\/[0-9]{2}\/[0-9]{4})\) :(.*)/;

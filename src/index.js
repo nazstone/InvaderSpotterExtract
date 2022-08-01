@@ -3,23 +3,32 @@ const { read, listFile } = require('./file');
 const { fetchDataFromWebSite } = require('./crawler');
 
 const start = async () => {
-  // init db
-  await getDb('./invaders.sqlite3');
+  try {
+    console.log('starting');
+    // init db
+    await getDb('./invaders.sqlite3');
 
-  const sqlPath = './sql/';
-  const files = listFile(sqlPath);
-  for (let i = 0; i < files.length; i += 1) {
-    const sql = read(`${sqlPath}/${files[i]}`);
-    await run(sql);
-  }
-
-  await fetchDataFromWebSite(async (jsons) => {
-    for (let i = 0; i < jsons.length; i += 1) {
-      await insertItem(jsons[i]);
+    console.log('running sql');
+    const sqlPath = './sql/';
+    const files = listFile(sqlPath);
+    for (let i = 0; i < files.length; i += 1) {
+      const sql = read(`${sqlPath}/${files[i]}`);
+      await run(sql);
     }
-  });
 
-  close();
+    console.log('fetching data from website');
+    await fetchDataFromWebSite(async (jsons) => {
+      console.log('inserting data');
+      for (let i = 0; i < jsons.length; i += 1) {
+        await insertItem(jsons[i]);
+      }
+    });
+
+    console.log('ended');
+    close();
+  } catch (error) {
+    console.error('something went wrong', error);
+  }
 };
 
 start();
