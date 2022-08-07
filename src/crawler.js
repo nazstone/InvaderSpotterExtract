@@ -18,6 +18,22 @@ const getImages = async (page, index, name, imgIndex, json) => {
     index,
     imgIndex
   );
+  if (imgIndex === 2) {
+    srcImage = await page.evaluate(
+      (index, imgIndex) => {
+        // eslint-disable-next-line no-undef
+        let obj = document.querySelector(
+          `tr.haut:nth-child(${index * 3 + 1}) > td:nth-child(${imgIndex}) a`
+        );
+        if (!obj) {
+          return null;
+        }
+        return obj.getAttribute('href');
+      },
+      index,
+      imgIndex
+    );
+  }
 
   if (srcImage) {
     if (!srcImage.startsWith('http')) {
